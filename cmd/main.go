@@ -6,6 +6,13 @@ import (
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/app"
 )
 
+// @title AtomHackMarsBackend RestAPI
+// @version 1.0
+// @description API server for Mars application
+
+// @host http://localhost:8080
+// @BasePath /api/v1
+
 func main() {
 	log.Println("Application start!")
 

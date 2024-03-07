@@ -1,0 +1,266 @@
+basePath: /api/v1
+definitions:
+  model.DeliveryStatus:
+    enum:
+    - SUCCESS
+    - PENDING
+    - ERROR
+    type: string
+    x-enum-varnames:
+    - DeliveryStatusSuccess
+    - DeliveryStatusPending
+    - DeliveryStatusError
+  model.Document:
+    properties:
+      createdAt:
+        type: string
+      deliveryStatus:
+        $ref: '#/definitions/model.DeliveryStatus'
+      files:
+        items:
+          $ref: '#/definitions/model.File'
+        type: array
+      id:
+        type: integer
+      owner:
+        type: string
+      payload:
+        type: string
+      receivedTime:
+        type: string
+      sentTime:
+        type: string
+      status:
+        $ref: '#/definitions/model.Status'
+      title:
+        type: string
+    type: object
+  model.DocumentUpdate:
+    properties:
+      owner:
+        type: string
+      payload:
+        type: string
+      title:
+        type: string
+    type: object
+  model.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  model.File:
+    properties:
+      documentID:
+        description: Внешний ключ для связи с Document
+        type: integer
+      id:
+        type: integer
+      path:
+        type: string
+    type: object
+  model.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  model.Status:
+    enum:
+    - DELETED
+    - DRAFT
+    - FORMED
+    type: string
+    x-enum-varnames:
+    - StatusDeleted
+    - StatusDraft
+    - StatusFormed
+host: http://localhost:8080
+info:
+  contact: {}
+  description: API server for Mars application
+  title: AtomHackMarsBackend RestAPI
+  version: "1.0"
+paths:
+  /document:
+    post:
+      consumes:
+      - application/json
+      description: Создает новый документ на основе переданных данных JSON.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Создает новый документ.
+      tags:
+      - Документы
+  /document/{docID}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет документ из репозитория по указанному ID.
+      parameters:
+      - description: ID документа
+        in: path
+        name: docID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Удаляет документ по ID.
+      tags:
+      - Документы
+    get:
+      consumes:
+      - application/json
+      description: Получает документ из репозитория по указанному ID.
+      parameters:
+      - description: ID документа
+        in: path
+        name: docID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/model.Document'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Получает документ по ID.
+      tags:
+      - Документы
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о документе на основе переданных данных JSON.
+      parameters:
+      - description: ID документа
+        in: path
+        name: docID
+        required: true
+        type: integer
+      - description: Пользовательский объект в формате JSON
+        in: body
+        name: doc
+        required: true
+        schema:
+          $ref: '#/definitions/model.DocumentUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Обновляет информацию о документе.
+      tags:
+      - Документы
+  /document/{docID}/file:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Загружает файл в хранилище MinIO и связывает его с указанным документом.
+      parameters:
+      - description: Идентификатор документа
+        in: path
+        name: docID
+        required: true
+        type: integer
+      - description: Файл для загрузки
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Загружает файл.
+      tags:
+      - Файлы
+  /document/{docID}/file/{fileID}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет файл из хранилища MinIO и из базы данных.
+      parameters:
+      - description: Идентификатор документа
+        in: path
+        name: docID
+        required: true
+        type: integer
+      - description: Идентификатор файла
+        in: path
+        name: fileID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Удаляет файл.
+      tags:
+      - Файлы
+swagger: "2.0"

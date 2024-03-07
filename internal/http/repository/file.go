@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"mime/multipart"
+	"path/filepath"
 
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/model"
 )
@@ -46,9 +47,12 @@ func (r *Repository) DeleteFileByID(docID, fileID uint) error {
         return fmt.Errorf("failed to find file with ID %d and document ID %d: %w", fileID, docID, err)
     }
 
-    if err := r.mc.DeleteFile(file.Path); err != nil {
-        return err
-    }
+    fileName := filepath.Base(file.Path)
+	objectName := fmt.Sprintf("documents/%d/%s", docID, fileName)
+
+	if err := r.mc.DeleteFile(objectName); err != nil {
+		return err
+	}
 
     if err := r.db.DatabaseGORM.Delete(&file).Error; err != nil {
         return fmt.Errorf("failed to delete file from database: %w", err)

@@ -7,6 +7,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// UploadFile обрабатывает запрос на загрузку файла.
+// @Summary Загружает файл.
+// @Description Загружает файл в хранилище MinIO и связывает его с указанным документом.
+// @Tags Файлы
+// @Accept multipart/form-data
+// @Produce json
+// @Param docID path int true "Идентификатор документа"
+// @Param file formData file true "Файл для загрузки"
+// @Success 200 {object} model.MessageResponse "Успешный ответ"
+// @Failure 400 {object} model.ErrorResponse "Ошибка в запросе"
+// @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
+// @Router /document/{docID}/file [post]
 func (h *Handler) UploadFile(c *gin.Context) {
 	docID, err := strconv.Atoi(c.Param("docID"))
 	if err != nil {
@@ -34,6 +46,18 @@ func (h *Handler) UploadFile(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
 }
 
+// DeleteFile обрабатывает запрос на удаление файла.
+// @Summary Удаляет файл.
+// @Description Удаляет файл из хранилища MinIO и из базы данных.
+// @Tags Файлы
+// @Accept json
+// @Produce json
+// @Param docID path int true "Идентификатор документа"
+// @Param fileID path int true "Идентификатор файла"
+// @Success 200 {object} model.MessageResponse "Успешный ответ"
+// @Failure 400 {object} model.ErrorResponse "Ошибка в запросе"
+// @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
+// @Router /document/{docID}/file/{fileID} [delete]
 func (h *Handler) DeleteFile(c *gin.Context) {
 	docID, err := strconv.Atoi(c.Param("docID"))
 	if err != nil {
