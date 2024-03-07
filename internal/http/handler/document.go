@@ -9,6 +9,7 @@ import (
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
 var upgrader = websocket.Upgrader{
@@ -177,6 +178,7 @@ func (h *Handler) SendDocument(c *gin.Context) {
 
 	document, err := h.r.GetDocumentByID(uint(docID))
 	if err != nil {
+		log.Print(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get document from database"})
 		return
 	}
