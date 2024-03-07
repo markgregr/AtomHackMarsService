@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,6 +24,7 @@ func (h *Handler) GetDocuments(c *gin.Context) {
 	}
 	defer conn.Close()
 
+	// Получаем параметры из URL
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 	statusStr := c.Query("status")
@@ -164,4 +166,32 @@ func (h *Handler) DeleteDocument(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Document deleted successfully"})
+}
+
+func (h *Handler) SendDocument(c *gin.Context) {
+	docID, err := strconv.Atoi(c.Param("docID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get document ID from request"})
+		return
+	}
+
+	document, err := h.r.GetDocumentByID(uint(docID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get document from database"})
+		return
+	}
+
+	documentJSON, err := json.Marshal(document)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to serialize document"})
+		return
+	}
+
+	// Отправка документа в Kafka
+	if err = h.p.SendReport("document-topic", string(documentJSON)); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send message"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Document sent to Kafka successfully"})
 }

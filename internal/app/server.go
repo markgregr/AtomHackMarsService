@@ -23,8 +23,9 @@ func (app *Application) Run() {
 	ApiGroup := r.Group("/api/v1")
 	{
 		DocumentGroup := ApiGroup.Group("/document")
-		{	
+		{
 			DocumentGroup.POST("/", app.handler.CreateDocument)
+			DocumentGroup.POST("/:docID", app.handler.SendDocument)
 			DocumentGroup.GET("/:docID", app.handler.GetDocumentByID)
 			DocumentGroup.PUT("/:docID", app.handler.UpdateDocument)
 			DocumentGroup.DELETE("/:docID", app.handler.DeleteDocument)
@@ -40,7 +41,6 @@ func (app *Application) Run() {
 		{
 			DocumentGroup.GET("/", app.handler.GetDocuments)
 		}
-
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
