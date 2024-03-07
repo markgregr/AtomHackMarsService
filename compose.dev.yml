@@ -38,9 +38,9 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD;
-      /usr/bin/mc mb myminio/bucket;
-      /usr/bin/mc anonymous set public myminio/bucket;
+      /usr/bin/mc alias set marsminio  http://marsminio:9000  $MARS_MINIO_ROOT_USER  $MARS_MINIO_ROOT_PASSWORD;
+      /usr/bin/mc mb marsminio/$MARS_MINIO_BUCKET;
+      /usr/bin/mc anonymous set public marsminio/$MARS_MINIO_BUCKET;
       exit 0;
       "
   adminer:
