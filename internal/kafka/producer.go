@@ -7,6 +7,7 @@ import (
 
 type Producer struct {
 	producer sarama.SyncProducer
+	KafkaCfg *config.Kafka
 }
 
 func NewProducer(cfg *config.Kafka) (*Producer, error) {
@@ -22,7 +23,10 @@ func NewProducer(cfg *config.Kafka) (*Producer, error) {
 		return nil, err
 	}
 
-	return &Producer{producer: producer}, nil
+	return &Producer{
+		producer: producer,
+		KafkaCfg: KafkaCfg,
+	}, nil
 }
 
 func (p *Producer) SendReport(topic string, message string) error {
