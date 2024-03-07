@@ -178,7 +178,6 @@ func (h *Handler) SendDocument(c *gin.Context) {
 
 	document, err := h.r.GetDocumentByID(uint(docID))
 	if err != nil {
-		log.Print(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get document from database"})
 		return
 	}
@@ -191,6 +190,7 @@ func (h *Handler) SendDocument(c *gin.Context) {
 
 	// Отправка документа в Kafka
 	if err = h.p.SendReport(h.p.KafkaCfg.Topic, string(documentJSON)); err != nil {
+		log.Print(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send message"})
 		return
 	}
