@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -10,7 +9,6 @@ import (
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
 )
 
 var upgrader = websocket.Upgrader{
@@ -190,9 +188,7 @@ func (h *Handler) SendDocument(c *gin.Context) {
 	}
 
 	// Отправка документа в Kafka
-	fmt.Println("Kafka cfg", h.p.KafkaCfg)
 	if err = h.p.SendReport(h.p.KafkaCfg.Topic, string(documentJSON)); err != nil {
-		log.Print(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send message"})
 		return
 	}
