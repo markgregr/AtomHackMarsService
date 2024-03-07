@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -189,6 +190,7 @@ func (h *Handler) SendDocument(c *gin.Context) {
 	}
 
 	// Отправка документа в Kafka
+	fmt.Println("Kafka cfg", h.p.KafkaCfg)
 	if err = h.p.SendReport(h.p.KafkaCfg.Topic, string(documentJSON)); err != nil {
 		log.Print(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send message"})

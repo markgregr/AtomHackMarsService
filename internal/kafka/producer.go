@@ -1,6 +1,8 @@
 package kafka
 
 import (
+	"fmt"
+
 	"github.com/IBM/sarama"
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/config"
 )
@@ -19,6 +21,7 @@ func NewProducer(cfg *config.Kafka) (*Producer, error) {
 	config.Producer.Return.Successes = KafkaCfg.ReturnSuccesses
 
 	producer, err := sarama.NewSyncProducer([]string{KafkaCfg.Addr}, config)
+	fmt.Println("Kafka", KafkaCfg.Addr)
 	if err != nil {
 		return nil, err
 	}
