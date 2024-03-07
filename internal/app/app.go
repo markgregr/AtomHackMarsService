@@ -22,7 +22,7 @@ func New() (*Application, error) {
 		return nil, err
 	}
 
-	h := handler.New(repo)
+	h := handler.New(repo, cfg)
 
 	app := &Application{
 		cfg:     cfg,

@@ -6,4 +6,5 @@ type App struct {
 	API      API
 	Database Database
 	Minio    Minio
+	Kafka    Kafka
 }

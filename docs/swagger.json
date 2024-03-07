@@ -1,13 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API server for Mars application",
-        "title": "AtomHackMarsBackend RestAPI",
-        "contact": {},
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "http://localhost:8080",
-    "basePath": "/api/v1",
     "paths": {
         "/document": {
             "post": {
