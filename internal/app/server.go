@@ -26,7 +26,9 @@ func (app *Application) Run() {
 	ApiGroup := r.Group("/api/v1")
 	{
 		DocumentGroup := ApiGroup.Group("/document")
-		{
+		{	
+			DocumentGroup.GET("/draft", app.handler.GetDraftDocuments)
+			DocumentGroup.GET("/formed", app.handler.GetFormedDocuments)
 			DocumentGroup.POST("/", app.handler.CreateDocument)
 			DocumentGroup.POST("/:docID", app.handler.SendDocument)
 			DocumentGroup.GET("/:docID", app.handler.GetDocumentByID)
@@ -37,16 +39,6 @@ func (app *Application) Run() {
 
 		}
 	}
-
-	WebSocketGroup := r.Group("/ws/v1")
-	{
-		DocumentGroup := WebSocketGroup.Group("/document")
-		{
-			DocumentGroup.GET("/draft", app.handler.GetDraftDocuments)
-			DocumentGroup.GET("/formed", app.handler.GetFormedDocuments)
-		}
-	}
-
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	addr := fmt.Sprintf("%s:%d", app.cfg.API.ServiceHost, app.cfg.API.ServicePort)

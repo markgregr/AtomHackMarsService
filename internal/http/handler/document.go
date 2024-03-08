@@ -16,56 +16,55 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+// GetDraftDocuments возвращает черновики документов.
+// @Summary Возвращает черновики документов.
+// @Description Возвращает список черновиков документов с учетом параметров page и pageSize.
+// @Tags Документы
+// @Accept json
+// @Produce json
+// @Param page query int false "Номер страницы" default(1)
+// @Param pageSize query int false "Размер страницы" default(10)
+// @Success 200 {array} model.Document "Успешный ответ"
+// @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
+// @Router /document/draft [get]
 func (h *Handler) GetDraftDocuments(c *gin.Context) {
-    conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upgrade to websocket connection"})
-        return
-    }
-    defer conn.Close()
-
-    // Получаем параметры из URL
     page, _ := strconv.Atoi(c.Query("page"))
     pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 
-    for {
-        documents, err := h.r.GetDraftDocuments(page, pageSize)
-        if err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents"})
-            return
-        }
-
-        if err := conn.WriteJSON(documents); err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send documents"})
-            return
-        }
+    // Получаем черновики документов
+    documents, err := h.r.GetDraftDocuments(page, pageSize)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents"})
+        return
     }
+
+    c.JSON(http.StatusOK, documents)
 }
 
+// GetFormedDocuments возвращает сформированные документы.
+// @Summary Возвращает сформированные документы.
+// @Description Возвращает список сформированных документов с учетом параметров page и pageSize.
+// @Tags Документы
+// @Accept json
+// @Produce json
+// @Param page query int false "Номер страницы" default(1)
+// @Param pageSize query int false "Размер страницы" default(10)
+// @Success 200 {array} model.Document "Успешный ответ"
+// @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
+// @Router /document/formed [get]
 func (h *Handler) GetFormedDocuments(c *gin.Context) {
-    conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upgrade to websocket connection"})
-        return
-    }
-    defer conn.Close()
-
     // Получаем параметры из URL
     page, _ := strconv.Atoi(c.Query("page"))
     pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 
-    for {
-        documents, err := h.r.GetFormedDocuments(page, pageSize)
-        if err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents"})
-            return
-        }
-
-        if err := conn.WriteJSON(documents); err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send documents"})
-            return
-        }
+    // Получаем сформированные документы
+    documents, err := h.r.GetFormedDocuments(page, pageSize)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents"})
+        return
     }
+
+    c.JSON(http.StatusOK, documents)
 }
 
 // CreateDocument создает новый документ.

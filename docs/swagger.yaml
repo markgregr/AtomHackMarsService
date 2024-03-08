@@ -296,4 +296,70 @@ paths:
       summary: Удаляет файл.
       tags:
       - Файлы
+  /document/draft:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список черновиков документов с учетом параметров page
+        и pageSize.
+      parameters:
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Размер страницы
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            items:
+              $ref: '#/definitions/model.Document'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Возвращает черновики документов.
+      tags:
+      - Документы
+  /document/formed:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список сформированных документов с учетом параметров
+        page и pageSize.
+      parameters:
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Размер страницы
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            items:
+              $ref: '#/definitions/model.Document'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Возвращает сформированные документы.
+      tags:
+      - Документы
 swagger: "2.0"
