@@ -16,42 +16,56 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func (h *Handler) GetDocuments(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upgrade to websocket connection"})
-		return
-	}
-	defer conn.Close()
+func (h *Handler) GetDraftDocuments(c *gin.Context) {
+    conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upgrade to websocket connection"})
+        return
+    }
+    defer conn.Close()
 
-	// Получаем параметры из URL
-	page, _ := strconv.Atoi(c.Query("page"))
-	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
-	statusStr := c.Query("status")
+    // Получаем параметры из URL
+    page, _ := strconv.Atoi(c.Query("page"))
+    pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 
-	var status model.Status
-	switch statusStr {
-	case "DRAFT":
-		status = model.StatusDraft
-	case "FORMED":
-		status = model.StatusFormed
-	default:
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid status"})
-		return
-	}
+    for {
+        documents, err := h.r.GetDraftDocuments(page, pageSize)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents"})
+            return
+        }
 
-	for {
-		documents, err := h.r.GetDocuments(page, pageSize, status)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents"})
-			return
-		}
+        if err := conn.WriteJSON(documents); err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send documents"})
+            return
+        }
+    }
+}
 
-		if err := conn.WriteJSON(documents); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send documents"})
-			return
-		}
-	}
+func (h *Handler) GetFormedDocuments(c *gin.Context) {
+    conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upgrade to websocket connection"})
+        return
+    }
+    defer conn.Close()
+
+    // Получаем параметры из URL
+    page, _ := strconv.Atoi(c.Query("page"))
+    pageSize, _ := strconv.Atoi(c.Query("pageSize"))
+
+    for {
+        documents, err := h.r.GetFormedDocuments(page, pageSize)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents"})
+            return
+        }
+
+        if err := conn.WriteJSON(documents); err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send documents"})
+            return
+        }
+    }
 }
 
 // CreateDocument создает новый документ.
@@ -60,7 +74,7 @@ func (h *Handler) GetDocuments(c *gin.Context) {
 // @Tags Документы
 // @Accept json
 // @Produce json
-// @Success 200 {object} model.MessageResponse "Успешный ответ"
+// @Success 200 {object} model.DocumentCreate "Успешный ответ"
 // @Failure 400 {object} model.ErrorResponse "Ошибка в запросе"
 // @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /document [post]
@@ -70,12 +84,13 @@ func (h *Handler) CreateDocument(c *gin.Context) {
 		CreatedAt: time.Now(),
 	}
 
-	if err := h.r.CreateDocument(&doc); err != nil {
+	docID, err := h.r.CreateDocument(&doc)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Document created successfully",
+		"id": docID,
 	})
 }
 

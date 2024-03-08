@@ -13,3 +13,7 @@ type DocumentUpdate struct {
 	Owner   string `json:"owner"`
 	Payload string `json:"payload"`
 }
+
+type DocumentCreate struct {
+	ID uint `json:"id"`
+}

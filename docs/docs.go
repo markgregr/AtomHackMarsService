@@ -32,7 +32,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Успешный ответ",
                         "schema": {
-                            "$ref": "#/definitions/model.MessageResponse"
+                            "$ref": "#/definitions/model.DocumentCreate"
                         }
                     },
                     "400": {
@@ -342,6 +342,14 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DocumentCreate": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.DocumentUpdate": {
             "type": "object",
             "properties": {
@@ -405,12 +413,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "http://localhost:8080",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "AtomHackMarsBackend RestAPI",
+	Description:      "API server for Mars application",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

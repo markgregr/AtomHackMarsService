@@ -1,3 +1,4 @@
+basePath: /api/v1
 definitions:
   model.DeliveryStatus:
     enum:
@@ -33,6 +34,11 @@ definitions:
         $ref: '#/definitions/model.Status'
       title:
         type: string
+    type: object
+  model.DocumentCreate:
+    properties:
+      id:
+        type: integer
     type: object
   model.DocumentUpdate:
     properties:
@@ -73,8 +79,12 @@ definitions:
     - StatusDeleted
     - StatusDraft
     - StatusFormed
+host: http://localhost:8080
 info:
   contact: {}
+  description: API server for Mars application
+  title: AtomHackMarsBackend RestAPI
+  version: "1.0"
 paths:
   /document:
     post:
@@ -87,7 +97,7 @@ paths:
         "200":
           description: Успешный ответ
           schema:
-            $ref: '#/definitions/model.MessageResponse'
+            $ref: '#/definitions/model.DocumentCreate'
         "400":
           description: Ошибка в запросе
           schema:

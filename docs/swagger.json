@@ -1,8 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "API server for Mars application",
+        "title": "AtomHackMarsBackend RestAPI",
+        "contact": {},
+        "version": "1.0"
     },
+    "host": "http://localhost:8080",
+    "basePath": "/api/v1",
     "paths": {
         "/document": {
             "post": {
@@ -21,7 +26,7 @@
                     "200": {
                         "description": "Успешный ответ",
                         "schema": {
-                            "$ref": "#/definitions/model.MessageResponse"
+                            "$ref": "#/definitions/model.DocumentCreate"
                         }
                     },
                     "400": {
@@ -328,6 +333,14 @@
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "model.DocumentCreate": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
                 }
             }
         },

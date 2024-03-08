@@ -39,7 +39,8 @@ func (app *Application) Run() {
 	{
 		DocumentGroup := WebSocketGroup.Group("/document")
 		{
-			DocumentGroup.GET("/", app.handler.GetDocuments)
+			DocumentGroup.GET("/draft", app.handler.GetDraftDocuments)
+			DocumentGroup.GET("/formed", app.handler.GetFormedDocuments)
 		}
 	}
 

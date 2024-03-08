@@ -1,28 +1,26 @@
 package repository
 
 import (
-	"errors"
-
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/model"
 )
 
-func (r *Repository) GetDocuments(page, pageSize int, status model.Status) ([]model.Document, error) {
+func (r *Repository) GetDraftDocuments(page, pageSize int) ([]model.Document, error) {
     var documents []model.Document
     offset := (page - 1) * pageSize
 
-    switch status {
-    case model.StatusDraft:
-        // Для документов со статусом "Черновик" сортируем по дате создания
-        if err := r.db.DatabaseGORM.Where("status = ?", model.StatusDraft).Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
-            return nil, err
-        }
-    case model.StatusFormed:
-        // Для документов со статусом "Сформирован" сортируем по SentTime
-        if err := r.db.DatabaseGORM.Where("status = ?", model.StatusFormed).Order("sent_time DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
-            return nil, err
-        }
-    default:
-        return nil, errors.New("invalid status")
+    if err := r.db.DatabaseGORM.Where("status = ?", model.StatusDraft).Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
+        return nil, err
+    }
+
+    return documents, nil
+}
+
+func (r *Repository) GetFormedDocuments(page, pageSize int) ([]model.Document, error) {
+    var documents []model.Document
+    offset := (page - 1) * pageSize
+
+    if err := r.db.DatabaseGORM.Where("status = ?", model.StatusFormed).Order("sent_time DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
+        return nil, err
     }
 
     return documents, nil
@@ -59,12 +57,12 @@ func (r *Repository) UpdateDocument(docID uint, doc *model.Document) error {
     return nil
 }
 
-func (r *Repository) CreateDocument(doc *model.Document) error {
+func (r *Repository) CreateDocument(doc *model.Document) (uint, error) {
 	if err := r.db.DatabaseGORM.Create(doc).Error; err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return doc.ID, nil
 }
 
 func (r *Repository) DeleteDocument(docID uint) error {
