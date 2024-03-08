@@ -64,6 +64,11 @@ definitions:
       path:
         type: string
     type: object
+  model.FileUpload:
+    properties:
+      id:
+        type: integer
+    type: object
   model.MessageResponse:
     properties:
       message:
@@ -90,7 +95,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Создает новый документ на основе переданных данных JSON.
+      description: Создает новый документ на основе переданных данных JSON, возвращает
+        id созданного документа.
       produces:
       - application/json
       responses:
@@ -232,7 +238,8 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: Загружает файл в хранилище MinIO и связывает его с указанным документом.
+      description: Загружает файл в хранилище MinIO, связывает его с указанным документом,возвращает
+        id загруженного файла.
       parameters:
       - description: Идентификатор документа
         in: path
@@ -250,7 +257,7 @@ paths:
         "200":
           description: Успешный ответ
           schema:
-            $ref: '#/definitions/model.MessageResponse'
+            $ref: '#/definitions/model.FileUpload'
         "400":
           description: Ошибка в запросе
           schema:

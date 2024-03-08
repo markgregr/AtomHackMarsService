@@ -69,7 +69,7 @@ func (h *Handler) GetFormedDocuments(c *gin.Context) {
 
 // CreateDocument создает новый документ.
 // @Summary Создает новый документ.
-// @Description Создает новый документ на основе переданных данных JSON.
+// @Description Создает новый документ на основе переданных данных JSON, возвращает id созданного документа.
 // @Tags Документы
 // @Accept json
 // @Produce json

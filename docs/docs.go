@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/document": {
             "post": {
-                "description": "Создает новый документ на основе переданных данных JSON.",
+                "description": "Создает новый документ на основе переданных данных JSON, возвращает id созданного документа.",
                 "consumes": [
                     "application/json"
                 ],
@@ -327,7 +327,7 @@ const docTemplate = `{
         },
         "/document/{docID}/file": {
             "post": {
-                "description": "Загружает файл в хранилище MinIO и связывает его с указанным документом.",
+                "description": "Загружает файл в хранилище MinIO, связывает его с указанным документом,возвращает id загруженного файла.",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -358,7 +358,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Успешный ответ",
                         "schema": {
-                            "$ref": "#/definitions/model.MessageResponse"
+                            "$ref": "#/definitions/model.FileUpload"
                         }
                     },
                     "400": {
@@ -522,6 +522,14 @@ const docTemplate = `{
                 },
                 "path": {
                     "type": "string"
+                }
+            }
+        },
+        "model.FileUpload": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
                 }
             }
         },

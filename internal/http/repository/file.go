@@ -16,17 +16,17 @@ func (r *Repository) GetFilesByDocumentID(docID uint) ([]model.File, error) {
 	return files, nil
 }
 
-func (r *Repository) UploadFile(docID uint, file multipart.File, fileSize int64, fileName string) error {
+func (r *Repository) UploadFile(docID uint, file multipart.File, fileSize int64, fileName string) (uint, error) {
 	var document model.Document
 	if err := r.db.DatabaseGORM.First(&document, docID).Error; err != nil {
-		return fmt.Errorf("failed to find document with ID %d: %w", docID, err)
+		return 0, fmt.Errorf("failed to find document with ID %d: %w", docID, err)
 	}
 
 	objectName := fmt.Sprintf("documents/%d/%s", docID, fileName)
 
 	fileURL, err := r.mc.UploadFile(objectName, file, fileSize)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	newFile := model.File{
@@ -35,10 +35,10 @@ func (r *Repository) UploadFile(docID uint, file multipart.File, fileSize int64,
 	}
 	// Сохраняем новую запись файла в базе данных
 	if err := r.db.DatabaseGORM.Create(&newFile).Error; err != nil {
-		return fmt.Errorf("failed to save file path in database: %w", err)
+		return 0, fmt.Errorf("failed to save file path in database: %w", err)
 	}
 
-	return nil
+	return newFile.ID, nil
 }
 
 func (r *Repository) DeleteFileByID(docID, fileID uint) error {

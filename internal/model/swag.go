@@ -17,3 +17,7 @@ type DocumentUpdate struct {
 type DocumentCreate struct {
 	ID uint `json:"id"`
 }
+
+type FileUpload struct {
+	ID uint `json:"id"`
+}

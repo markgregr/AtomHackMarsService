@@ -9,13 +9,13 @@ import (
 
 // UploadFile обрабатывает запрос на загрузку файла.
 // @Summary Загружает файл.
-// @Description Загружает файл в хранилище MinIO и связывает его с указанным документом.
+// @Description Загружает файл в хранилище MinIO, связывает его с указанным документом,возвращает id загруженного файла.
 // @Tags Файлы
 // @Accept multipart/form-data
 // @Produce json
 // @Param docID path int true "Идентификатор документа"
 // @Param file formData file true "Файл для загрузки"
-// @Success 200 {object} model.MessageResponse "Успешный ответ"
+// @Success 200 {object} model.FileUpload "Успешный ответ"
 // @Failure 400 {object} model.ErrorResponse "Ошибка в запросе"
 // @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /document/{docID}/file [post]
@@ -38,12 +38,13 @@ func (h *Handler) UploadFile(c *gin.Context) {
 	fileName := fileHeader.Filename
 
 	// Загружаем файл в хранилище MinIO и обновляем путь файла в базе данных
-	if err := h.r.UploadFile(uint(docID), file, fileSize, fileName); err != nil {
+	fileID, err := h.r.UploadFile(uint(docID), file, fileSize, fileName); 
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload file: " + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
+	c.JSON(http.StatusOK, gin.H{"id": fileID})
 }
 
 // DeleteFile обрабатывает запрос на удаление файла.
