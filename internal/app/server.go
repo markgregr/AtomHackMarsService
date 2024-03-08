@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/SicParv1sMagna/AtomHackMarsService/docs"
+	"github.com/SicParv1sMagna/AtomHackMarsService/internal/app/middleware"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -19,6 +20,8 @@ func (app *Application) Run() {
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.BasePath = "/api/v1"
+
+	r.Use(middleware.CorsMiddleware())
 
 	ApiGroup := r.Group("/api/v1")
 	{
