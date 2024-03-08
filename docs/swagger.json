@@ -138,6 +138,48 @@
                     }
                 }
             },
+            "post": {
+                "description": "Отправляет документ на Землю по docID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Документы"
+                ],
+                "summary": "Отправляет документ на Землю.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID документа",
+                        "name": "docID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "schema": {
+                            "$ref": "#/definitions/model.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Удаляет документ из репозитория по указанному ID.",
                 "consumes": [

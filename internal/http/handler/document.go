@@ -151,10 +151,7 @@ func (h *Handler) UpdateDocument(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Document updated successfully",
-		"doc":     doc,
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Document updated successfully"})
 }
 
 // DeleteDocument удаляет документ по его ID.
@@ -183,6 +180,17 @@ func (h *Handler) DeleteDocument(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Document deleted successfully"})
 }
 
+// SendDocument отправляет документ на Землю.
+// @Summary Отправляет документ на Землю.
+// @Description Отправляет документ на Землю по docID.
+// @Tags Документы
+// @Accept json
+// @Produce json
+// @Param docID path int true "ID документа"
+// @Success 200 {object} model.MessageResponse "Успешный ответ"
+// @Failure 400 {object} model.ErrorResponse "Ошибка в запросе"
+// @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
+// @Router /document/{docID} [post]
 func (h *Handler) SendDocument(c *gin.Context) {
 	docID, err := strconv.Atoi(c.Param("docID"))
 	if err != nil {
@@ -190,20 +198,31 @@ func (h *Handler) SendDocument(c *gin.Context) {
 		return
 	}
 
-	document, err := h.r.GetDocumentByID(uint(docID))
+	doc, err := h.r.GetDocumentByID(uint(docID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get document from database"})
 		return
 	}
 
-	documentJSON, err := json.Marshal(document)
+	docSubmitted, err := h.r.SendDocument(uint(docID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get document from database"})
+		return
+	}
+
+	docJSON, err := json.Marshal(docSubmitted)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to serialize document"})
 		return
 	}
 
 	// Отправка документа в Kafka
-	if err = h.p.SendReport(h.p.KafkaCfg.Topic, string(documentJSON)); err != nil {
+	if err = h.p.SendReport(h.p.KafkaCfg.Topic, string(docJSON)); err != nil {
+		if err := h.r.UpdateDocument(uint(docID), doc); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send message"})
 		return
 	}

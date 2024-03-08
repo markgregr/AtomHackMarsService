@@ -166,6 +166,34 @@ paths:
       summary: Получает документ по ID.
       tags:
       - Документы
+    post:
+      consumes:
+      - application/json
+      description: Отправляет документ на Землю по docID.
+      parameters:
+      - description: ID документа
+        in: path
+        name: docID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Отправляет документ на Землю.
+      tags:
+      - Документы
     put:
       consumes:
       - application/json

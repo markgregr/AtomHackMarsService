@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"errors"
+	"time"
+
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/model"
 )
 
@@ -49,6 +52,18 @@ func (r *Repository) UpdateDocument(docID uint, doc *model.Document) error {
     if doc.Payload != "" {
         existingDoc.Payload = doc.Payload
     }
+    if doc.DeliveryStatus != nil{
+        existingDoc.DeliveryStatus = doc.DeliveryStatus
+    }
+    if doc.Status != ""{
+        existingDoc.Status = doc.Status
+    }
+    if doc.SentTime != nil{
+        existingDoc.SentTime = doc.SentTime
+    }
+    if doc.ReceivedTime != nil{
+        existingDoc.ReceivedTime = doc.ReceivedTime
+    }
 
     if err := r.db.DatabaseGORM.Save(existingDoc).Error; err != nil {
         return err
@@ -78,5 +93,30 @@ func (r *Repository) DeleteDocument(docID uint) error {
     }
 
     return nil
+}
+
+func (r *Repository) SendDocument(docID uint) (*model.Document, error) {
+    doc, err := r.GetDocumentByID(docID)
+    if err != nil {
+        return nil, err
+    }
+
+    if doc.Status != model.StatusDraft {
+        return nil, errors.New("document is not in draft status")
+    }
+
+    doc.Status = model.StatusFormed
+
+    deliveryStatusPending := model.DeliveryStatusPending
+    doc.DeliveryStatus = &deliveryStatusPending
+
+    sentTime := time.Now()
+    doc.SentTime = &sentTime
+
+    if err := r.UpdateDocument(docID, doc); err != nil {
+        return nil, err
+    }
+
+    return doc, nil
 }
 
