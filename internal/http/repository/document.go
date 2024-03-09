@@ -7,26 +7,44 @@ import (
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/model"
 )
 
-func (r *Repository) GetDraftDocuments(page, pageSize int) ([]model.Document, error) {
+func (r *Repository) GetDocumentsCount(status model.Status) (uint, error) {
+    var count int64
+    if err := r.db.DatabaseGORM.Model(&model.Document{}).Where("status = ?", status).Count(&count).Error; err != nil {
+        return 0, err
+    }
+    return uint(count), nil
+}
+
+func (r *Repository) GetDraftDocuments(page, pageSize int) ([]model.Document, uint, error) {
     var documents []model.Document
     offset := (page - 1) * pageSize
 
     if err := r.db.DatabaseGORM.Where("status = ?", model.StatusDraft).Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
-        return nil, err
+        return nil, 0, err
     }
 
-    return documents, nil
+    total, err := r.GetDocumentsCount(model.StatusDraft)
+    if err != nil {
+        return nil, 0, err
+    }
+
+    return documents, total, nil
 }
 
-func (r *Repository) GetFormedDocuments(page, pageSize int) ([]model.Document, error) {
+func (r *Repository) GetFormedDocuments(page, pageSize int) ([]model.Document, uint, error) {
     var documents []model.Document
     offset := (page - 1) * pageSize
 
     if err := r.db.DatabaseGORM.Where("status = ?", model.StatusFormed).Order("sent_time DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
-        return nil, err
+        return nil, 0, err
     }
 
-    return documents, nil
+    total, err := r.GetDocumentsCount(model.StatusFormed)
+    if err != nil {
+        return nil, 0, err
+    }
+
+    return documents, total, nil
 }
 
 func (r *Repository) GetDocumentByID(docID uint) (*model.Document, error) {

@@ -26,14 +26,14 @@ func (h *Handler) GetDraftDocuments(c *gin.Context) {
     pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 
     // Получаем черновики документов
-    documents, err := h.r.GetDraftDocuments(page, pageSize)
+    documents, total, err := h.r.GetDraftDocuments(page, pageSize)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents: " + err.Error()})
         return
     }
 
     c.JSON(http.StatusOK, gin.H{"items":documents,
-								"total": len(documents)})
+								"total": total})
 }
 
 // GetFormedDocuments возвращает сформированные документы.
@@ -53,14 +53,14 @@ func (h *Handler) GetFormedDocuments(c *gin.Context) {
     pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 
     // Получаем сформированные документы
-    documents, err := h.r.GetFormedDocuments(page, pageSize)
+    documents, total, err := h.r.GetFormedDocuments(page, pageSize)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents: " + err.Error()})
         return
     }
 
     c.JSON(http.StatusOK, gin.H{"items":documents,
-								"total": len(documents)})
+								"total": total})
 }
 
 // CreateDocument создает новый документ.
