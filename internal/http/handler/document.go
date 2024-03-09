@@ -51,9 +51,9 @@ func (h *Handler) GetFormedDocuments(c *gin.Context) {
     // Получаем параметры из URL
     page, _ := strconv.Atoi(c.Query("page"))
     pageSize, _ := strconv.Atoi(c.Query("pageSize"))
-
+	deliveryStatus := model.DeliveryStatus(c.Query("deliveryStatus"))
     // Получаем сформированные документы
-    documents, total, err := h.r.GetFormedDocuments(page, pageSize)
+    documents, total, err := h.r.GetFormedDocuments(page, pageSize, deliveryStatus)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents: " + err.Error()})
         return
