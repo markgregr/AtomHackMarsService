@@ -125,6 +125,13 @@ const docTemplate = `{
                         "description": "Размер страницы",
                         "name": "pageSize",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "PENDING",
+                        "description": "Статус доставки",
+                        "name": "deliveryStatus",
+                        "in": "query"
                     }
                 ],
                 "responses": {

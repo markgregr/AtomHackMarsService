@@ -391,6 +391,11 @@ paths:
         in: query
         name: pageSize
         type: integer
+      - default: PENDING
+        description: Статус доставки
+        in: query
+        name: deliveryStatus
+        type: string
       produces:
       - application/json
       responses:

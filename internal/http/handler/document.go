@@ -44,6 +44,7 @@ func (h *Handler) GetDraftDocuments(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Номер страницы" default(1)
 // @Param pageSize query int false "Размер страницы" default(10)
+// @Param deliveryStatus query string false "Статус доставки" default(PENDING)
 // @Success 200 {array} model.GetDocuments "Успешный ответ"
 // @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /document/formed [get]
