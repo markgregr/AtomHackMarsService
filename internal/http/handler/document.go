@@ -116,7 +116,7 @@ func (h *Handler) GetDocumentByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"doc": doc})
+	c.JSON(http.StatusOK, doc)
 }
 
 // UpdateDocument обновляет информацию о документе.
