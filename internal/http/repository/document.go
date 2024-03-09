@@ -15,9 +15,9 @@ func (r *Repository) GetDocumentsCountByStatus(status model.Status) (uint, error
     return uint(count), nil
 }
 
-func (r *Repository) GetDocumentsCountByDeliveryStatus(status model.DeliveryStatus) (uint, error) {
+func (r *Repository) GetDocumentsCountByDeliveryStatus(deliveryStatus model.DeliveryStatus) (uint, error) {
     var count int64
-    if err := r.db.DatabaseGORM.Model(&model.Document{}).Where("status = ?", status).Count(&count).Error; err != nil {
+    if err := r.db.DatabaseGORM.Model(&model.Document{}).Where("delivery_status = ?", deliveryStatus).Count(&count).Error; err != nil {
         return 0, err
     }
     return uint(count), nil
