@@ -23,7 +23,7 @@ func (app *Application) Run() {
 
 	// r.Use(middleware.CorsMiddleware())
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -32,7 +32,7 @@ func (app *Application) Run() {
 	ApiGroup := r.Group("/api/v1")
 	{
 		DocumentGroup := ApiGroup.Group("/document")
-		{	
+		{
 			DocumentGroup.GET("/draft", app.handler.GetDraftDocuments)
 			DocumentGroup.GET("/formed", app.handler.GetFormedDocuments)
 			DocumentGroup.POST("/", app.handler.CreateDocument)
