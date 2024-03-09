@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/SicParv1sMagna/AtomHackMarsService/docs"
-	"github.com/SicParv1sMagna/AtomHackMarsService/internal/app/middleware"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -21,7 +21,13 @@ func (app *Application) Run() {
 	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.BasePath = "/api/v1"
 
-	r.Use(middleware.CorsMiddleware())
+	// r.Use(middleware.CorsMiddleware())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
 
 	ApiGroup := r.Group("/api/v1")
 	{
