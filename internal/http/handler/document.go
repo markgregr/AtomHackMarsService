@@ -34,7 +34,7 @@ func (h *Handler) GetDraftDocuments(c *gin.Context) {
     // Получаем черновики документов
     documents, err := h.r.GetDraftDocuments(page, pageSize)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents"})
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents: " + err.Error()})
         return
     }
 
@@ -60,7 +60,7 @@ func (h *Handler) GetFormedDocuments(c *gin.Context) {
     // Получаем сформированные документы
     documents, err := h.r.GetFormedDocuments(page, pageSize)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents"})
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents: " + err.Error()})
         return
     }
 
@@ -107,7 +107,7 @@ func (h *Handler) CreateDocument(c *gin.Context) {
 func (h *Handler) GetDocumentByID(c *gin.Context) {
 	docID, err := strconv.Atoi(c.Param("docID"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file from request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file from request: " + err.Error()})
 		return
 	}
 
@@ -134,14 +134,14 @@ func (h *Handler) GetDocumentByID(c *gin.Context) {
 func (h *Handler) UpdateDocument(c *gin.Context) {
 	docID, err := strconv.Atoi(c.Param("docID"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file from request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file from request: " + err.Error()})
 		return
 	}
 
 	var doc model.Document
 
 	if err := c.BindJSON(&doc); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to bind JSON"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to bind JSON: " + err.Error()})
 		return
 	}
 
@@ -167,7 +167,7 @@ func (h *Handler) UpdateDocument(c *gin.Context) {
 func (h *Handler) DeleteDocument(c *gin.Context) {
 	docID, err := strconv.Atoi(c.Param("docID"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get document ID from request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get document ID from request: " + err.Error()})
 		return
 	}
 
@@ -193,36 +193,36 @@ func (h *Handler) DeleteDocument(c *gin.Context) {
 func (h *Handler) SendDocument(c *gin.Context) {
 	docID, err := strconv.Atoi(c.Param("docID"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get document ID from request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get document ID from request: " + err.Error()})
 		return
 	}
 
 	doc, err := h.r.GetDocumentByID(uint(docID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get document from database"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get document from database: " + err.Error()})
 		return
 	}
 
 	docSubmitted, err := h.r.SendDocument(uint(docID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get document from database"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send document: " + err.Error()})
 		return
 	}
 
 	docJSON, err := json.Marshal(docSubmitted)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to serialize document"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to serialize document: " + err.Error()})
 		return
 	}
 
 	// Отправка документа в Kafka
 	if err = h.p.SendReport(h.p.KafkaCfg.Topic, string(docJSON)); err != nil {
 		if err := h.r.UpdateDocument(uint(docID), doc); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update document message: " + err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send message"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send message: " + err.Error()})
 		return
 	}
 

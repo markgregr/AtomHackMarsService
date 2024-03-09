@@ -18,17 +18,17 @@ import (
 // @Success 200 {object} model.FileUpload "Успешный ответ"
 // @Failure 400 {object} model.ErrorResponse "Ошибка в запросе"
 // @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
-// @Router /document/{docID}/file [post]
+// @Router /document/{docID}/file [put]
 func (h *Handler) UploadFile(c *gin.Context) {
 	docID, err := strconv.Atoi(c.Param("docID"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file from request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file from request: " + err.Error()})
 		return
 	}
 
 	file, fileHeader, err := c.Request.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file from request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file from request: " + err.Error()})
 		return
 	}
 	defer file.Close()
@@ -62,13 +62,13 @@ func (h *Handler) UploadFile(c *gin.Context) {
 func (h *Handler) DeleteFile(c *gin.Context) {
 	docID, err := strconv.Atoi(c.Param("docID"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get document ID from request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get document ID from request: " + err.Error()})
 		return
 	}
 
 	fileID, err := strconv.Atoi(c.Param("fileID"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file ID from request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file ID from request: " + err.Error()})
 		return
 	}
 

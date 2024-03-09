@@ -235,7 +235,7 @@ paths:
       tags:
       - Документы
   /document/{docID}/file:
-    post:
+    put:
       consumes:
       - multipart/form-data
       description: Загружает файл в хранилище MinIO, связывает его с указанным документом,возвращает

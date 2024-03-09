@@ -40,7 +40,7 @@ func (app *Application) Run() {
 			DocumentGroup.GET("/:docID", app.handler.GetDocumentByID)
 			DocumentGroup.PUT("/:docID", app.handler.UpdateDocument)
 			DocumentGroup.DELETE("/:docID", app.handler.DeleteDocument)
-			DocumentGroup.POST("/:docID/file", app.handler.UploadFile)
+			DocumentGroup.PUT("/:docID/file", app.handler.UploadFile)
 			DocumentGroup.DELETE("/:docID/file/:fileID", app.handler.DeleteFile)
 
 		}

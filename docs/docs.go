@@ -326,7 +326,7 @@ const docTemplate = `{
             }
         },
         "/document/{docID}/file": {
-            "post": {
+            "put": {
                 "description": "Загружает файл в хранилище MinIO, связывает его с указанным документом,возвращает id загруженного файла.",
                 "consumes": [
                     "multipart/form-data"
