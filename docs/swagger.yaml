@@ -69,6 +69,15 @@ definitions:
       id:
         type: integer
     type: object
+  model.GetDocuments:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/model.Document'
+        type: array
+      total:
+        type: integer
+    type: object
   model.MessageResponse:
     properties:
       message:
@@ -327,7 +336,7 @@ paths:
           description: Успешный ответ
           schema:
             items:
-              $ref: '#/definitions/model.Document'
+              $ref: '#/definitions/model.GetDocuments'
             type: array
         "500":
           description: Внутренняя ошибка сервера
@@ -360,7 +369,7 @@ paths:
           description: Успешный ответ
           schema:
             items:
-              $ref: '#/definitions/model.Document'
+              $ref: '#/definitions/model.GetDocuments'
             type: array
         "500":
           description: Внутренняя ошибка сервера

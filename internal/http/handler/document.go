@@ -8,13 +8,7 @@ import (
 
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/model"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 )
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
 
 // GetDraftDocuments возвращает черновики документов.
 // @Summary Возвращает черновики документов.
@@ -24,7 +18,7 @@ var upgrader = websocket.Upgrader{
 // @Produce json
 // @Param page query int false "Номер страницы" default(1)
 // @Param pageSize query int false "Размер страницы" default(10)
-// @Success 200 {array} model.Document "Успешный ответ"
+// @Success 200 {array} model.GetDocuments "Успешный ответ"
 // @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /document/draft [get]
 func (h *Handler) GetDraftDocuments(c *gin.Context) {
@@ -38,7 +32,8 @@ func (h *Handler) GetDraftDocuments(c *gin.Context) {
         return
     }
 
-    c.JSON(http.StatusOK, documents)
+    c.JSON(http.StatusOK, gin.H{"items":documents,
+								"total": len(documents)})
 }
 
 // GetFormedDocuments возвращает сформированные документы.
@@ -49,7 +44,7 @@ func (h *Handler) GetDraftDocuments(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Номер страницы" default(1)
 // @Param pageSize query int false "Размер страницы" default(10)
-// @Success 200 {array} model.Document "Успешный ответ"
+// @Success 200 {array} model.GetDocuments "Успешный ответ"
 // @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /document/formed [get]
 func (h *Handler) GetFormedDocuments(c *gin.Context) {
@@ -64,7 +59,8 @@ func (h *Handler) GetFormedDocuments(c *gin.Context) {
         return
     }
 
-    c.JSON(http.StatusOK, documents)
+    c.JSON(http.StatusOK, gin.H{"items":documents,
+								"total": len(documents)})
 }
 
 // CreateDocument создает новый документ.

@@ -79,7 +79,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Document"
+                                "$ref": "#/definitions/model.GetDocuments"
                             }
                         }
                     },
@@ -127,7 +127,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Document"
+                                "$ref": "#/definitions/model.GetDocuments"
                             }
                         }
                     },
@@ -523,6 +523,20 @@
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.GetDocuments": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Document"
+                    }
+                },
+                "total": {
                     "type": "integer"
                 }
             }

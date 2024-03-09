@@ -85,7 +85,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Document"
+                                "$ref": "#/definitions/model.GetDocuments"
                             }
                         }
                     },
@@ -133,7 +133,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Document"
+                                "$ref": "#/definitions/model.GetDocuments"
                             }
                         }
                     },
@@ -529,6 +529,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.GetDocuments": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Document"
+                    }
+                },
+                "total": {
                     "type": "integer"
                 }
             }

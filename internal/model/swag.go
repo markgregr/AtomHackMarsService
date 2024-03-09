@@ -21,3 +21,8 @@ type DocumentCreate struct {
 type FileUpload struct {
 	ID uint `json:"id"`
 }
+
+type GetDocuments struct {
+	Items []Document `json:"items"`
+	Total uint       `json:"total"`
+}
