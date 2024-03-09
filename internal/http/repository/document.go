@@ -39,22 +39,6 @@ func (r *Repository) GetDraftDocuments(page, pageSize int) ([]model.Document, ui
     return documents, total, nil
 }
 
-// func (r *Repository) GetFormedDocuments(page, pageSize int) ([]model.Document, uint, error) {
-//     var documents []model.Document
-//     offset := (page - 1) * pageSize
-
-//     if err := r.db.DatabaseGORM.Where("status = ?", model.StatusFormed).Order("sent_time DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
-//         return nil, 0, err
-//     }
-
-//     total, err := r.GetDocumentsCount(model.StatusFormed)
-//     if err != nil {
-//         return nil, 0, err
-//     }
-
-//     return documents, total, nil
-// }
-
 func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model.DeliveryStatus) ([]model.Document, uint, error) {
     var documents []model.Document
     offset := (page - 1) * pageSize
