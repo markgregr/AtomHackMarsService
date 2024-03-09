@@ -26,7 +26,7 @@ func (m *Minio) UploadFile(objectName string, file multipart.File, fileSize int6
 		return "", err
 	}
 
-	 fileURL := fmt.Sprintf("https://%s/%s/%s", m.MinioCfg.Endpoint, m.MinioCfg.MinioBucket, objectName)
+	 fileURL := fmt.Sprintf("%s/%s/%s", m.MinioCfg.Endpoint, m.MinioCfg.MinioBucket, objectName)
 	 return fileURL, nil
 }
 
