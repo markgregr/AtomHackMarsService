@@ -252,6 +252,8 @@ func (h *Handler) UpdateStatusSuccess(c *gin.Context){
 
 	statusSuccess := model.DeliveryStatusSuccess
 	doc.DeliveryStatus = &statusSuccess
+	receicedTime := time.Now()
+	doc.ReceivedTime = &receicedTime
 
 	if err := h.r.UpdateDocument(uint(docID), doc); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
