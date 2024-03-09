@@ -42,6 +42,7 @@ func (app *Application) Run() {
 			DocumentGroup.DELETE("/:docID", app.handler.DeleteDocument)
 			DocumentGroup.PUT("/:docID/file", app.handler.UploadFile)
 			DocumentGroup.DELETE("/:docID/file/:fileID", app.handler.DeleteFile)
+			DocumentGroup.PUT("/:docID/status", app.handler.UpdateStatusSuccess)
 
 		}
 	}

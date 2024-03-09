@@ -312,6 +312,35 @@ paths:
       summary: Удаляет файл.
       tags:
       - Файлы
+  /document/{docID}/status:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет статус документа на SUCCESS по указанному docID.
+      parameters:
+      - description: ID документа
+        in: path
+        name: docID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Обновляет статус документа на SUCCESS.
+      tags:
+      - Документы
   /document/draft:
     get:
       consumes:

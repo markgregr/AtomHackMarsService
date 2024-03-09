@@ -224,3 +224,38 @@ func (h *Handler) SendDocument(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Document sent to Kafka successfully"})
 }
+
+// UpdateStatusSuccess обновляет статус документа на SUCCESS.
+// @Summary Обновляет статус документа на SUCCESS.
+// @Description Обновляет статус документа на SUCCESS по указанному docID.
+// @Tags Документы
+// @Accept json
+// @Produce json
+// @Param docID path int true "ID документа"
+// @Success 200 {object} model.MessageResponse "Успешный ответ"
+// @Failure 400 {object} model.ErrorResponse "Ошибка в запросе"
+// @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
+// @Router /document/{docID}/status [put]
+func (h *Handler) UpdateStatusSuccess(c *gin.Context){
+	docID, err := strconv.Atoi(c.Param("docID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get document ID from request: " + err.Error()})
+		return
+	}
+
+	doc, err := h.r.GetDocumentByID(uint(docID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get document from database: " + err.Error()})
+		return
+	}
+
+	statusSuccess := model.DeliveryStatusSuccess
+	doc.DeliveryStatus = &statusSuccess
+
+	if err := h.r.UpdateDocument(uint(docID), doc); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Document updated status SUCCESS successfully"})
+}
