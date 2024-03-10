@@ -45,7 +45,7 @@ func (r *Repository) GetDocumentsDraftCount(status model.Status, deliveryStatus 
     }
 
     if owner != "" {
-        query = query.Where("owner LIKE ?", "%"+owner+"%")
+        query = query.Where("owner =", owner)
     }
 
     if title != "" {
