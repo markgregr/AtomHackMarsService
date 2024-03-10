@@ -18,15 +18,18 @@ import (
 // @Produce json
 // @Param page query int false "Номер страницы" default(1)
 // @Param pageSize query int false "Размер страницы" default(10)
+// @Param owner query string false "Название"
+// @Param title query string false "Имя отправителя"
 // @Success 200 {array} model.GetDocuments "Успешный ответ"
 // @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /document/draft [get]
 func (h *Handler) GetDraftDocuments(c *gin.Context) {
     page, _ := strconv.Atoi(c.Query("page"))
     pageSize, _ := strconv.Atoi(c.Query("pageSize"))
-
+	owner := c.Query("owner")
+	title := c.Query("title")
     // Получаем черновики документов
-    documents, total, err := h.r.GetDraftDocuments(page, pageSize)
+    documents, total, err := h.r.GetDraftDocuments(page, pageSize, owner, title)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents: " + err.Error()})
         return
@@ -45,6 +48,8 @@ func (h *Handler) GetDraftDocuments(c *gin.Context) {
 // @Param page query int false "Номер страницы" default(1)
 // @Param pageSize query int false "Размер страницы" default(10)
 // @Param deliveryStatus query string false "Статус доставки" default(PENDING)
+// @Param owner query string false "Название" 
+// @Param title query string false "Имя отправителя"
 // @Success 200 {array} model.GetDocuments "Успешный ответ"
 // @Failure 500 {object} model.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /document/formed [get]
@@ -53,8 +58,10 @@ func (h *Handler) GetFormedDocuments(c *gin.Context) {
     page, _ := strconv.Atoi(c.Query("page"))
     pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 	deliveryStatus := model.DeliveryStatus(c.Query("deliveryStatus"))
+	owner := c.Query("owner")
+	title := c.Query("title")
     // Получаем сформированные документы
-    documents, total, err := h.r.GetFormedDocuments(page, pageSize, deliveryStatus)
+    documents, total, err := h.r.GetFormedDocuments(page, pageSize, deliveryStatus, owner, title)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve documents: " + err.Error()})
         return

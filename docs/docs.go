@@ -77,6 +77,18 @@ const docTemplate = `{
                         "description": "Размер страницы",
                         "name": "pageSize",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Название",
+                        "name": "owner",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Имя отправителя",
+                        "name": "title",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -131,6 +143,18 @@ const docTemplate = `{
                         "default": "PENDING",
                         "description": "Статус доставки",
                         "name": "deliveryStatus",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Название",
+                        "name": "owner",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Имя отправителя",
+                        "name": "title",
                         "in": "query"
                     }
                 ],

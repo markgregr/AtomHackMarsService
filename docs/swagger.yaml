@@ -358,6 +358,14 @@ paths:
         in: query
         name: pageSize
         type: integer
+      - description: Название
+        in: query
+        name: owner
+        type: string
+      - description: Имя отправителя
+        in: query
+        name: title
+        type: string
       produces:
       - application/json
       responses:
@@ -395,6 +403,14 @@ paths:
         description: Статус доставки
         in: query
         name: deliveryStatus
+        type: string
+      - description: Название
+        in: query
+        name: owner
+        type: string
+      - description: Имя отправителя
+        in: query
+        name: title
         type: string
       produces:
       - application/json
