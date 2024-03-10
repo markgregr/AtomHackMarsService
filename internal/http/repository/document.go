@@ -45,7 +45,7 @@ func (r *Repository) GetDocumentsDraftCount(status model.Status, deliveryStatus 
     }
 
     if owner != "" {
-        query = query.Where("owner =", owner)
+        query = query.Where("owner = ?", owner)
     }
 
     if title != "" {
@@ -100,7 +100,7 @@ func (r *Repository) GetDraftDocuments(page, pageSize int, owner, title string) 
     query := r.db.DatabaseGORM.Where("LOWER(status) = LOWER(?)", model.StatusDraft)
 
     if owner != "" {
-        query = query.Where("owner =", owner)
+        query = query.Where("owner = ?", owner)
     }
 
     if title != "" {
