@@ -358,13 +358,9 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: Название
+      - description: Отправитель или Название
         in: query
-        name: owner
-        type: string
-      - description: Имя отправителя
-        in: query
-        name: title
+        name: ownerOrTitle
         type: string
       produces:
       - application/json
@@ -404,13 +400,9 @@ paths:
         in: query
         name: deliveryStatus
         type: string
-      - description: Название
+      - description: Отправитель или Название
         in: query
-        name: owner
-        type: string
-      - description: Имя отправителя
-        in: query
-        name: title
+        name: ownerOrTitle
         type: string
       produces:
       - application/json

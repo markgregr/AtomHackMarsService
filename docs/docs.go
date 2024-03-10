@@ -80,14 +80,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Название",
-                        "name": "owner",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Имя отправителя",
-                        "name": "title",
+                        "description": "Отправитель или Название",
+                        "name": "ownerOrTitle",
                         "in": "query"
                     }
                 ],
@@ -147,14 +141,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Название",
-                        "name": "owner",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Имя отправителя",
-                        "name": "title",
+                        "description": "Отправитель или Название",
+                        "name": "ownerOrTitle",
                         "in": "query"
                     }
                 ],

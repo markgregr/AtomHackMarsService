@@ -74,14 +74,8 @@
                     },
                     {
                         "type": "string",
-                        "description": "Название",
-                        "name": "owner",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Имя отправителя",
-                        "name": "title",
+                        "description": "Отправитель или Название",
+                        "name": "ownerOrTitle",
                         "in": "query"
                     }
                 ],
@@ -141,14 +135,8 @@
                     },
                     {
                         "type": "string",
-                        "description": "Название",
-                        "name": "owner",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Имя отправителя",
-                        "name": "title",
+                        "description": "Отправитель или Название",
+                        "name": "ownerOrTitle",
                         "in": "query"
                     }
                 ],

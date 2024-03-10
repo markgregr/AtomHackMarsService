@@ -77,7 +77,7 @@ import (
 //     return documents, total, nil
 // }
 
-func (r *Repository) GetDocumentsCount(status model.Status, deliveryStatus model.DeliveryStatus, owner, title string) (uint, error) {
+func (r *Repository) GetDocumentsCount(status model.Status, deliveryStatus model.DeliveryStatus, ownerOrTitle string) (uint, error) {
     var count int64
     query := r.db.DatabaseGORM.Model(&model.Document{})
 
@@ -89,12 +89,8 @@ func (r *Repository) GetDocumentsCount(status model.Status, deliveryStatus model
         query = query.Where("delivery_status = ?", deliveryStatus)
     }
 
-    if owner != "" {
-        query = query.Where("owner LIKE ?", "%"+owner+"%")
-    }
-
-    if title != "" {
-        query = query.Where("title LIKE ?", "%"+title+"%")
+    if ownerOrTitle != "" {
+        query = query.Where("owner LIKE ? OR title LIKE ?", "%"+ownerOrTitle+"%", "%"+ownerOrTitle+"%")
     }
 
     if err := query.Count(&count).Error; err != nil {
@@ -104,7 +100,7 @@ func (r *Repository) GetDocumentsCount(status model.Status, deliveryStatus model
     return uint(count), nil
 }
 
-func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model.DeliveryStatus, owner, title string) ([]model.Document, uint, error) {
+func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model.DeliveryStatus, ownerOrTitle string) ([]model.Document, uint, error) {
     var documents []model.Document
     offset := (page - 1) * pageSize
 
@@ -122,19 +118,15 @@ func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model
         query = query.Where("status = ?", model.StatusFormed).Order("sent_time DESC")
     }
 
-    if owner != "" {
-        query = query.Where("owner LIKE ?", "%"+owner+"%")
-    }
-
-    if title != "" {
-        query = query.Where("title LIKE ?", "%"+title+"%")
+    if ownerOrTitle != "" {
+        query = query.Where("owner LIKE ? OR title LIKE ?", "%"+ownerOrTitle+"%", "%"+ownerOrTitle+"%")
     }
 
     if err := query.Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
         return nil, 0, err
     }
 
-    total, err := r.GetDocumentsCount(model.StatusFormed, deliveryStatus, title, owner)
+    total, err := r.GetDocumentsCount(model.StatusFormed, deliveryStatus, ownerOrTitle)
     if err != nil {
         return nil, 0, err
     }
@@ -142,25 +134,22 @@ func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model
     return documents, total, nil
 }
 
-func (r *Repository) GetDraftDocuments(page, pageSize int, owner, title string) ([]model.Document, uint, error) {
+func (r *Repository) GetDraftDocuments(page, pageSize int, ownerOrTitle string) ([]model.Document, uint, error) {
     var documents []model.Document
     offset := (page - 1) * pageSize
 
     query := r.db.DatabaseGORM.Where("status = ?", model.StatusDraft)
 
-    if owner != "" {
-        query = query.Where("owner LIKE ?", "%"+owner+"%")
+    if ownerOrTitle != "" {
+        query = query.Where("owner LIKE ? OR title LIKE ?", "%"+ownerOrTitle+"%", "%"+ownerOrTitle+"%")
     }
 
-    if title != "" {
-        query = query.Where("title LIKE ?", "%"+title+"%")
-    }
 
     if err := query.Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
         return nil, 0, err
     }
 
-    total, err := r.GetDocumentsCount(model.StatusDraft, "", owner, title)
+    total, err := r.GetDocumentsCount(model.StatusDraft, "", ownerOrTitle)
     if err != nil {
         return nil, 0, err
     }
