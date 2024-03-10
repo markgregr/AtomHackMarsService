@@ -22,7 +22,7 @@ func (r *Repository) GetDocumentsFormedCount(status model.Status, deliveryStatus
     }
 
     if ownerOrTitle != "" {
-        query = query.Where("LOWER(owner) LIKE ? OR LOWER(title) LIKE ?", "%"+strings.ToLower(ownerOrTitle)+"%", "%"+strings.ToLower(ownerOrTitle)+"%")
+        query = query.Where("owner LIKE ? OR LOWER(title) LIKE ?", "%"+ownerOrTitle+"%", "%"+strings.ToLower(ownerOrTitle)+"%")
     }
 
     if err := query.Count(&count).Error; err != nil {
@@ -78,8 +78,7 @@ func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model
     }
 
     if ownerOrTitle != "" {
-        ownerOrTitle = strings.ToLower(ownerOrTitle)
-        query = query.Where("LOWER(owner) LIKE ? OR LOWER(title) LIKE ?", "%"+ownerOrTitle+"%", "%"+ownerOrTitle+"%")
+        query = query.Where("owner LIKE ? OR LOWER(title) LIKE ?", "%"+ownerOrTitle+"%", "%"+strings.ToLower(ownerOrTitle)+"%")
     }
 
     if err := query.Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
