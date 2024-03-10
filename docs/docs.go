@@ -80,8 +80,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Отправитель или Название",
-                        "name": "ownerOrTitle",
+                        "description": "Отправитель",
+                        "name": "owner",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Название",
+                        "name": "title",
                         "in": "query"
                     }
                 ],

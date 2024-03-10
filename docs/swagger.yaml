@@ -358,9 +358,13 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: Отправитель или Название
+      - description: Отправитель
         in: query
-        name: ownerOrTitle
+        name: owner
+        type: string
+      - description: Название
+        in: query
+        name: title
         type: string
       produces:
       - application/json

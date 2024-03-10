@@ -2,95 +2,54 @@ package repository
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/model"
 )
 
-// func (r *Repository) GetDocumentsCountByStatus(status model.Status) (uint, error) {
-//     var count int64
-//     if err := r.db.DatabaseGORM.Model(&model.Document{}).Where("status = ?", status).Count(&count).Error; err != nil {
-//         return 0, err
-//     }
-//     return uint(count), nil
-// }
 
-// func (r *Repository) GetDocumentsCountByDeliveryStatus(deliveryStatus model.DeliveryStatus) (uint, error) {
-//     var count int64
-//     if err := r.db.DatabaseGORM.Model(&model.Document{}).Where("delivery_status = ?", deliveryStatus).Count(&count).Error; err != nil {
-//         return 0, err
-//     }
-//     return uint(count), nil
-// }
-
-// func (r *Repository) GetDocumentsCountByStatusAndDeliveryStatus(status model.Status, deliveryStatus model.DeliveryStatus) (uint, error) {
-//     var count int64
-//     query := r.db.DatabaseGORM.Model(&model.Document{})
-
-//     if status != "" {
-//         query = query.Where("status = ?", status)
-//     }
-
-//     if deliveryStatus != "" {
-//         query = query.Where("delivery_status = ?", deliveryStatus)
-//     }
-
-//     if err := query.Count(&count).Error; err != nil {
-//         return 0, err
-//     }
-
-//     return uint(count), nil
-// }
-
-// func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model.DeliveryStatus) ([]model.Document, uint, error) {
-//     var documents []model.Document
-//     offset := (page - 1) * pageSize
-
-//     if deliveryStatus != "" {
-//         if deliveryStatus == model.DeliveryStatusSuccess{
-//             if err := r.db.DatabaseGORM.Where("delivery_status = ?", deliveryStatus).Order("received_time DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
-//                 return nil, 0, err
-//             }
-//         } else if deliveryStatus == model.DeliveryStatusPending{
-//             if err := r.db.DatabaseGORM.Where("delivery_status = ?", deliveryStatus).Order("sent_time DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
-//                 return nil, 0, err
-//             }
-//         }
-
-//         total, err := r.GetDocumentsCountByDeliveryStatus(deliveryStatus)
-//         if err != nil {
-//             return nil, 0, err
-//         }
-
-//         return documents, total, nil
-//     }
-
-//     if err := r.db.DatabaseGORM.Where("status = ?", model.StatusFormed).Order("sent_time DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
-//         return nil, 0, err
-//     }
-
-//     total, err := r.GetDocumentsCountByStatus(model.StatusFormed)
-//     if err != nil {
-//         return nil, 0, err
-//     }
-
-//     return documents, total, nil
-// }
-
-func (r *Repository) GetDocumentsCount(status model.Status, deliveryStatus model.DeliveryStatus, ownerOrTitle string) (uint, error) {
+func (r *Repository) GetDocumentsFormedCount(status model.Status, deliveryStatus model.DeliveryStatus, ownerOrTitle string) (uint, error) {
     var count int64
     query := r.db.DatabaseGORM.Model(&model.Document{})
 
     if status != "" {
-        query = query.Where("status = ?", status)
+        query = query.Where("LOWER(status) = LOWER(?)", status)
     }
 
     if deliveryStatus != "" {
-        query = query.Where("delivery_status = ?", deliveryStatus)
+        query = query.Where("LOWER(delivery_status) = LOWER(?)", deliveryStatus)
     }
 
     if ownerOrTitle != "" {
-        query = query.Where("owner LIKE ? OR title LIKE ?", "%"+ownerOrTitle+"%", "%"+ownerOrTitle+"%")
+        query = query.Where("LOWER(owner) LIKE ? OR LOWER(title) LIKE ?", "%"+strings.ToLower(ownerOrTitle)+"%", "%"+strings.ToLower(ownerOrTitle)+"%")
+    }
+
+    if err := query.Count(&count).Error; err != nil {
+        return 0, err
+    }
+
+    return uint(count), nil
+}
+
+func (r *Repository) GetDocumentsDraftCount(status model.Status, deliveryStatus model.DeliveryStatus, owner, title string) (uint, error) {
+    var count int64
+    query := r.db.DatabaseGORM.Model(&model.Document{})
+
+    if status != "" {
+        query = query.Where("LOWER(status) = LOWER(?)", status)
+    }
+
+    if deliveryStatus != "" {
+        query = query.Where("LOWER(delivery_status) = LOWER(?)", deliveryStatus)
+    }
+
+    if owner != "" {
+        query = query.Where("owner LIKE ?", "%"+owner+"%")
+    }
+
+    if title != "" {
+        query = query.Where("LOWER(title) LIKE ?", "%"+strings.ToLower(title)+"%")
     }
 
     if err := query.Count(&count).Error; err != nil {
@@ -107,7 +66,7 @@ func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model
     query := r.db.DatabaseGORM
 
     if deliveryStatus != "" {
-        query = query.Where("delivery_status = ?", deliveryStatus)
+        query = query.Where("LOWER(delivery_status) = LOWER(?)", deliveryStatus)
 
         if deliveryStatus == model.DeliveryStatusSuccess {
             query = query.Order("received_time DESC")
@@ -115,18 +74,19 @@ func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model
             query = query.Order("sent_time DESC")
         }
     } else {
-        query = query.Where("status = ?", model.StatusFormed).Order("sent_time DESC")
+        query = query.Where("LOWER(status) = LOWER(?)", model.StatusFormed).Order("sent_time DESC")
     }
 
     if ownerOrTitle != "" {
-        query = query.Where("owner LIKE ? OR title LIKE ?", "%"+ownerOrTitle+"%", "%"+ownerOrTitle+"%")
+        ownerOrTitle = strings.ToLower(ownerOrTitle)
+        query = query.Where("LOWER(owner) LIKE ? OR LOWER(title) LIKE ?", "%"+ownerOrTitle+"%", "%"+ownerOrTitle+"%")
     }
 
     if err := query.Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
         return nil, 0, err
     }
 
-    total, err := r.GetDocumentsCount(model.StatusFormed, deliveryStatus, ownerOrTitle)
+    total, err := r.GetDocumentsFormedCount(model.StatusFormed, deliveryStatus, ownerOrTitle)
     if err != nil {
         return nil, 0, err
     }
@@ -134,22 +94,26 @@ func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model
     return documents, total, nil
 }
 
-func (r *Repository) GetDraftDocuments(page, pageSize int, ownerOrTitle string) ([]model.Document, uint, error) {
+func (r *Repository) GetDraftDocuments(page, pageSize int, owner, title string) ([]model.Document, uint, error) {
     var documents []model.Document
     offset := (page - 1) * pageSize
 
-    query := r.db.DatabaseGORM.Where("status = ?", model.StatusDraft)
+    query := r.db.DatabaseGORM.Where("LOWER(status) = LOWER(?)", model.StatusDraft)
 
-    if ownerOrTitle != "" {
-        query = query.Where("owner LIKE ? OR title LIKE ?", "%"+ownerOrTitle+"%", "%"+ownerOrTitle+"%")
+    if owner != "" {
+        query = query.Where("owner =", owner)
     }
 
+    if title != "" {
+        title = strings.ToLower(title)
+        query = query.Where("LOWER(title) LIKE ?", "%"+title+"%")
+    }
 
     if err := query.Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&documents).Error; err != nil {
         return nil, 0, err
     }
 
-    total, err := r.GetDocumentsCount(model.StatusDraft, "", ownerOrTitle)
+    total, err := r.GetDocumentsDraftCount(model.StatusDraft, "", owner, title)
     if err != nil {
         return nil, 0, err
     }
