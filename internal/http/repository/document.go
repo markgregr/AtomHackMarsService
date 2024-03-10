@@ -7,41 +7,40 @@ import (
 	"github.com/SicParv1sMagna/AtomHackMarsService/internal/model"
 )
 
-func (r *Repository) GetDocumentsCountByStatus(status model.Status) (uint, error) {
-    var count int64
-    if err := r.db.DatabaseGORM.Model(&model.Document{}).Where("status = ?", status).Count(&count).Error; err != nil {
-        return 0, err
-    }
-    return uint(count), nil
-}
+// func (r *Repository) GetDocumentsCountByStatus(status model.Status) (uint, error) {
+//     var count int64
+//     if err := r.db.DatabaseGORM.Model(&model.Document{}).Where("status = ?", status).Count(&count).Error; err != nil {
+//         return 0, err
+//     }
+//     return uint(count), nil
+// }
 
-func (r *Repository) GetDocumentsCountByDeliveryStatus(deliveryStatus model.DeliveryStatus) (uint, error) {
-    var count int64
-    if err := r.db.DatabaseGORM.Model(&model.Document{}).Where("delivery_status = ?", deliveryStatus).Count(&count).Error; err != nil {
-        return 0, err
-    }
-    return uint(count), nil
-}
+// func (r *Repository) GetDocumentsCountByDeliveryStatus(deliveryStatus model.DeliveryStatus) (uint, error) {
+//     var count int64
+//     if err := r.db.DatabaseGORM.Model(&model.Document{}).Where("delivery_status = ?", deliveryStatus).Count(&count).Error; err != nil {
+//         return 0, err
+//     }
+//     return uint(count), nil
+// }
 
-func (r *Repository) GetDocumentsCountByStatusAndDeliveryStatus(status model.Status, deliveryStatus model.DeliveryStatus) (uint, error) {
-    var count int64
-    query := r.db.DatabaseGORM.Model(&model.Document{})
+// func (r *Repository) GetDocumentsCountByStatusAndDeliveryStatus(status model.Status, deliveryStatus model.DeliveryStatus) (uint, error) {
+//     var count int64
+//     query := r.db.DatabaseGORM.Model(&model.Document{})
 
-    if status != "" {
-        query = query.Where("status = ?", status)
-    }
+//     if status != "" {
+//         query = query.Where("status = ?", status)
+//     }
 
-    if deliveryStatus != "" {
-        query = query.Where("delivery_status = ?", deliveryStatus)
-    }
+//     if deliveryStatus != "" {
+//         query = query.Where("delivery_status = ?", deliveryStatus)
+//     }
 
-    if err := query.Count(&count).Error; err != nil {
-        return 0, err
-    }
+//     if err := query.Count(&count).Error; err != nil {
+//         return 0, err
+//     }
 
-    return uint(count), nil
-}
-
+//     return uint(count), nil
+// }
 
 // func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model.DeliveryStatus) ([]model.Document, uint, error) {
 //     var documents []model.Document
@@ -78,6 +77,33 @@ func (r *Repository) GetDocumentsCountByStatusAndDeliveryStatus(status model.Sta
 //     return documents, total, nil
 // }
 
+func (r *Repository) GetDocumentsCount(status model.Status, deliveryStatus model.DeliveryStatus, owner, title string) (uint, error) {
+    var count int64
+    query := r.db.DatabaseGORM.Model(&model.Document{})
+
+    if status != "" {
+        query = query.Where("status = ?", status)
+    }
+
+    if deliveryStatus != "" {
+        query = query.Where("delivery_status = ?", deliveryStatus)
+    }
+
+    if owner != "" {
+        query = query.Where("owner LIKE ?", "%"+owner+"%")
+    }
+
+    if title != "" {
+        query = query.Where("title LIKE ?", "%"+title+"%")
+    }
+
+    if err := query.Count(&count).Error; err != nil {
+        return 0, err
+    }
+
+    return uint(count), nil
+}
+
 func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model.DeliveryStatus, owner, title string) ([]model.Document, uint, error) {
     var documents []model.Document
     offset := (page - 1) * pageSize
@@ -108,7 +134,7 @@ func (r *Repository) GetFormedDocuments(page, pageSize int, deliveryStatus model
         return nil, 0, err
     }
 
-    total, err := r.GetDocumentsCountByStatusAndDeliveryStatus(model.StatusFormed, deliveryStatus)
+    total, err := r.GetDocumentsCount(model.StatusFormed, deliveryStatus, title, owner)
     if err != nil {
         return nil, 0, err
     }
@@ -134,7 +160,7 @@ func (r *Repository) GetDraftDocuments(page, pageSize int, owner, title string) 
         return nil, 0, err
     }
 
-    total, err := r.GetDocumentsCountByStatus(model.StatusDraft)
+    total, err := r.GetDocumentsCount(model.StatusDraft, "", owner, title)
     if err != nil {
         return nil, 0, err
     }
